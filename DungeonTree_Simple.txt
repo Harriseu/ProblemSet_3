@@ -1,0 +1,71 @@
+PROBLEM SET 3 - TASK 2: DUNGEON ROOM LAYOUT (TREE STRUCTURE)
+=============================================================
+
+Game Description:
+"Temple of the Ancients" - A dungeon crawler where the player explores an ancient
+temple to find the legendary Crystal of Power. The dungeon is organized as a tree
+structure with rooms as nodes and doors as edges.
+
+Tree Structure:
+===============
+
+                    Temple Entrance (ROOT)
+                    ├── Stone Tablet [Clue]
+                    │   └── Action: Examine clue
+                    │
+                    └── North Door
+                          │
+                          ▼
+                      Main Hall
+                      ├── Giant Spider [Monster]
+                      │   └── Action: Attack
+                      ├── Health Potion [Item]
+                      │   └── Action: Collect
+                      │
+                      ├── West Door ──────────┐
+                      │                       │
+                      ├── East Door ───────┐  │
+                      │                    │  │
+                      └── Hidden Door ─┐   │  │
+                                       │   │  │
+       ┌───────────────────────────────┘   │  │
+       │                                   │  │
+       ▼                                   ▼  ▼
+   Secret Passage              Treasure Vault  Guard Chamber
+   ├── Dusty Journal [Clue]    ├── Golden Amulet [Item]    ├── Skeleton Warrior [Monster]
+   │   └── Action: Examine     │   └── Action: Collect     │   └── Action: Attack
+   ├── Shadow Beast [Monster]  └── Silver Coins [Item]     └── Ancient Shield [Clue]
+   │   └── Action: Attack          └── Action: Collect         └── Action: Examine
+   │
+   └── Ancient Door
+         │
+         ▼
+   Inner Sanctum (GOAL)
+   └── Crystal of Power [Item]
+       └── Action: Collect (WIN!)
+
+
+Legend:
+-------
+[Monster] - Enemy that can be attacked
+[Item]    - Treasure that can be collected
+[Clue]    - Object that can be examined for information
+(ROOT)    - Starting point of the dungeon tree
+(GOAL)    - Final destination
+
+
+Player Actions by Entity Type:
+-------------------------------
+1. Attack Action   - Used on Monsters to defeat them (Visitor Pattern)
+2. Collect Action  - Used on Items to add them to inventory (Visitor Pattern)
+3. Examine Action  - Used on Clues to reveal hidden information (Visitor Pattern)
+
+
+Tree Properties:
+----------------
+- Total Nodes (Rooms): 6
+- Maximum Depth: 3 levels from root
+- Branching Factor: Up to 3 children per node (Main Hall)
+- Leaf Nodes: Guard Chamber, Treasure Vault, Inner Sanctum
+- Root Node: Temple Entrance
+- Path to Goal: Entrance → Main Hall → Secret Passage → Inner Sanctum

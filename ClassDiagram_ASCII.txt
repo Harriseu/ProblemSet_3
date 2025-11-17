@@ -1,0 +1,205 @@
+PROBLEM SET 3 - TASK 1: CLASS DIAGRAM
+=====================================
+
+DUNGEON CRAWLER GAME - DATA STRUCTURE DESIGN
+
+
+1. ENTITY HIERARCHY (Inheritance)
+==================================
+
+                    ┌─────────────────────────┐
+                    │      <<abstract>>       │
+                    │        Entity           │
+                    ├─────────────────────────┤
+                    │ # fName: string         │
+                    │ # fDescription: string  │
+                    ├─────────────────────────┤
+                    │ + getName(): string     │
+                    │ + getDescription()      │
+                    │ + accept(visitor)       │
+                    └───────────┬─────────────┘
+                                │
+                ┌───────────────┼───────────────┐
+                │               │               │
+                │               │               │
+      ┌─────────▼────────┐  ┌──▼──────────┐  ┌─▼─────────────┐
+      │     Monster      │  │    Item     │  │     Clue      │
+      ├──────────────────┤  ├─────────────┤  ├───────────────┤
+      │ - fHealth: int   │  │ - fValue    │  │ - fHiddenInfo │
+      │ - fDamage: int   │  │ - fCollected│  │ - fExamined   │
+      │ - fIsAlive: bool │  ├─────────────┤  ├───────────────┤
+      ├──────────────────┤  │ + getValue()│  │ + getHidden() │
+      │ + getHealth()    │  │ + collect() │  │ + examine()   │
+      │ + getDamage()    │  │ + accept()  │  │ + accept()    │
+      │ + takeDamage()   │  └─────────────┘  └───────────────┘
+      │ + isAlive()      │
+      │ + accept()       │
+      └──────────────────┘
+
+
+2. PLAYER CLASS
+===============
+
+      ┌──────────────────────────┐
+      │        Player            │
+      ├──────────────────────────┤
+      │ - fName: string          │
+      │ - fHealth: int           │
+      │ - fMaxHealth: int        │
+      │ - fAttackPower: int      │
+      │ - fInventory: vector<>   │
+      │ - fScore: int            │
+      ├──────────────────────────┤
+      │ + getName(): string      │
+      │ + getHealth(): int       │
+      │ + getAttackPower(): int  │
+      │ + getScore(): int        │
+      │ + takeDamage(int)        │
+      │ + heal(int)              │
+      │ + addToInventory(string) │
+      │ + addScore(int)          │
+      │ + isAlive(): bool        │
+      │ + displayStatus()        │
+      └──────────────────────────┘
+
+
+3. VISITOR PATTERN (Behavioral Design Pattern)
+===============================================
+
+      ┌────────────────────────────┐
+      │   <<interface>>            │
+      │   EntityVisitor            │
+      ├────────────────────────────┤
+      │ + visitMonster(Monster&)   │
+      │ + visitItem(Item&)         │
+      │ + visitClue(Clue&)         │
+      └──────────┬─────────────────┘
+                 │
+                 │ implements
+                 │
+      ┌──────────┼──────────┬──────────────┐
+      │          │          │              │
+      │          │          │              │
+┌─────▼──────┐ ┌▼─────────┐ ┌▼────────────┐
+│ Attack     │ │ Collect  │ │  Examine    │
+│ Action     │ │ Action   │ │  Action     │
+├────────────┤ ├──────────┤ ├─────────────┤
+│ - fPlayer& │ │ -fPlayer&│ │ - fPlayer&  │
+├────────────┤ ├──────────┤ ├─────────────┤
+│ + visit    │ │ + visit  │ │ + visit     │
+│   Monster()│ │   Monster│ │   Monster() │
+│ + visit    │ │ + visit  │ │ + visit     │
+│   Item()   │ │   Item() │ │   Item()    │
+│ + visit    │ │ + visit  │ │ + visit     │
+│   Clue()   │ │   Clue() │ │   Clue()    │
+└────────────┘ └──────────┘ └─────────────┘
+      │              │              │
+      └──────────────┼──────────────┘
+                     │
+                  uses │
+                     │
+                     ▼
+              ┌──────────┐
+              │  Player  │
+              └──────────┘
+
+
+4. TREE STRUCTURE (Room Nodes and Dungeon)
+===========================================
+
+      ┌─────────────────────────────────┐
+      │          Dungeon                │
+      ├─────────────────────────────────┤
+      │ - fRoot: Room*                  │
+      │ - fRooms: vector<unique_ptr<>>  │
+      ├─────────────────────────────────┤
+      │ + createRoom(name, desc): Room* │
+      │ + setEntrance(Room*)            │
+      │ + getEntrance(): Room*          │
+      │ + getRoomCount(): size_t        │
+      │ + displayInfo()                 │
+      └────────────┬────────────────────┘
+                   │
+                   │ contains
+                   │
+                   ▼
+      ┌─────────────────────────────────┐
+      │           Room                  │
+      ├─────────────────────────────────┤
+      │ - fName: string                 │
+      │ - fDescription: string          │
+      │ - fEntities: vector<Entity*>    │
+      │ - fConnectedRooms: vector<Room*>│ ◄──┐
+      │ - fDoorNames: vector<string>    │    │
+      ├─────────────────────────────────┤    │
+      │ + getName(): string             │    │
+      │ + getDescription(): string      │    │
+      │ + addEntity(Entity*)            │    │
+      │ + connectRoom(Room*, string)    │────┘
+      │ + describe()                    │   connects to
+      │ + getEntity(index): Entity*     │   (tree edges)
+      │ + getConnectedRoom(index)       │
+      └───────────┬─────────────────────┘
+                  │
+                  │ contains
+                  │
+                  ▼
+      ┌─────────────────┐
+      │     Entity      │
+      │  (Monster,      │
+      │   Item, Clue)   │
+      └─────────────────┘
+
+
+5. RELATIONSHIPS SUMMARY
+=========================
+
+Entity ──────────► EntityVisitor (accepts)
+   │
+   │ inheritance
+   │
+   ├──► Monster
+   ├──► Item
+   └──► Clue
+
+EntityVisitor ◄──── AttackAction   (implements)
+              ◄──── CollectAction  (implements)
+              ◄──── ExamineAction  (implements)
+
+AttackAction   ──► Player (uses)
+CollectAction  ──► Player (uses)
+ExamineAction  ──► Player (uses)
+
+Dungeon ◄────── Room (contains 0..*)
+Room ◄────── Room (connects to 0..*, tree structure)
+Room ◄────── Entity (contains 0..*)
+
+
+6. DESIGN PATTERN NOTES
+========================
+
+VISITOR PATTERN:
+- Allows different actions to be performed on entities
+- Actions: Attack, Collect, Examine
+- Entities accept visitors via double dispatch
+- New actions can be added without modifying Entity classes
+- Demonstrates separation of concerns
+
+TREE STRUCTURE:
+- Rooms are nodes connected by edges (doors)
+- Dungeon maintains reference to root (entrance)
+- Parent-child relationships represent room connections
+- No cycles (proper tree structure)
+- Supports depth-first traversal via player navigation
+
+
+7. KEY FEATURES
+===============
+
+✓ Object-Oriented Design with Inheritance
+✓ Visitor Pattern for extensible actions
+✓ Tree Data Structure for spatial organization
+✓ Smart Pointers for memory safety
+✓ Entity-Component system
+✓ Separation of concerns (data vs. behavior)
+✓ Scalable architecture
