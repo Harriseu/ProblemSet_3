@@ -1,0 +1,165 @@
+@startuml DungeonCrawlerClassDiagram
+
+title Problem Set 3 - Dungeon Crawler Game\nClass Diagram
+
+' Entity Hierarchy
+abstract class Entity {
+  # fName: string
+  # fDescription: string
+  + Entity(aName: string, aDescription: string)
+  + getName(): string
+  + getDescription(): string
+  + {abstract} accept(aVisitor: EntityVisitor): void
+}
+
+class Monster {
+  - fHealth: int
+  - fDamage: int
+  - fIsAlive: bool
+  + Monster(aName: string, aDescription: string, aHealth: int, aDamage: int)
+  + getHealth(): int
+  + getDamage(): int
+  + isAlive(): bool
+  + takeDamage(aDamage: int): void
+  + accept(aVisitor: EntityVisitor): void
+}
+
+class Item {
+  - fValue: int
+  - fIsCollected: bool
+  + Item(aName: string, aDescription: string, aValue: int)
+  + getValue(): int
+  + isCollected(): bool
+  + collect(): void
+  + accept(aVisitor: EntityVisitor): void
+}
+
+class Clue {
+  - fHiddenInfo: string
+  - fIsExamined: bool
+  + Clue(aName: string, aDescription: string, aHiddenInfo: string)
+  + getHiddenInfo(): string
+  + isExamined(): bool
+  + examine(): void
+  + accept(aVisitor: EntityVisitor): void
+}
+
+Entity <|-- Monster
+Entity <|-- Item
+Entity <|-- Clue
+
+' Player
+class Player {
+  - fName: string
+  - fHealth: int
+  - fMaxHealth: int
+  - fAttackPower: int
+  - fInventory: vector<string>
+  - fScore: int
+  + Player(aName: string, aHealth: int, aAttackPower: int)
+  + getName(): string
+  + getHealth(): int
+  + getMaxHealth(): int
+  + getAttackPower(): int
+  + getScore(): int
+  + getInventory(): vector<string>
+  + takeDamage(aDamage: int): void
+  + heal(aAmount: int): void
+  + addToInventory(aItem: string): void
+  + addScore(aPoints: int): void
+  + isAlive(): bool
+  + displayStatus(): void
+}
+
+' Visitor Pattern
+interface EntityVisitor {
+  + {abstract} visitMonster(aMonster: Monster): void
+  + {abstract} visitItem(aItem: Item): void
+  + {abstract} visitClue(aClue: Clue): void
+}
+
+class AttackAction {
+  - fPlayer: Player&
+  + AttackAction(aPlayer: Player&)
+  + visitMonster(aMonster: Monster): void
+  + visitItem(aItem: Item): void
+  + visitClue(aClue: Clue): void
+}
+
+class CollectAction {
+  - fPlayer: Player&
+  + CollectAction(aPlayer: Player&)
+  + visitMonster(aMonster: Monster): void
+  + visitItem(aItem: Item): void
+  + visitClue(aClue: Clue): void
+}
+
+class ExamineAction {
+  - fPlayer: Player&
+  + ExamineAction(aPlayer: Player&)
+  + visitMonster(aMonster: Monster): void
+  + visitItem(aItem: Item): void
+  + visitClue(aClue: Clue): void
+}
+
+EntityVisitor <|.. AttackAction
+EntityVisitor <|.. CollectAction
+EntityVisitor <|.. ExamineAction
+
+AttackAction --> Player : uses
+CollectAction --> Player : uses
+ExamineAction --> Player : uses
+
+Entity --> EntityVisitor : accepts
+
+' Tree Structure
+class Room {
+  - fName: string
+  - fDescription: string
+  - fEntities: vector<shared_ptr<Entity>>
+  - fConnectedRooms: vector<Room*>
+  - fDoorNames: vector<string>
+  + Room(aName: string, aDescription: string)
+  + getName(): string
+  + getDescription(): string
+  + getEntities(): vector<shared_ptr<Entity>>
+  + getConnectedRooms(): vector<Room*>
+  + getDoorNames(): vector<string>
+  + addEntity(aEntity: shared_ptr<Entity>): void
+  + connectRoom(aRoom: Room*, aDoorName: string): void
+  + describe(): void
+  + getEntity(aIndex: size_t): shared_ptr<Entity>
+  + getConnectedRoom(aIndex: size_t): Room*
+}
+
+class Dungeon {
+  - fRoot: Room*
+  - fRooms: vector<unique_ptr<Room>>
+  + Dungeon()
+  + createRoom(aName: string, aDescription: string): Room*
+  + setEntrance(aRoom: Room*): void
+  + getEntrance(): Room*
+  + getRoomCount(): size_t
+  + displayInfo(): void
+}
+
+Room "0..*" --o "1" Dungeon : contains
+Room "0..*" --> "0..*" Room : connects to
+Room "1" o-- "0..*" Entity : contains
+
+' Design Pattern Notes
+note right of EntityVisitor
+  <b>Visitor Pattern</b>
+  Allows different actions
+  to be performed on entities
+  without modifying Entity classes
+end note
+
+note right of Room
+  <b>Tree Structure</b>
+  Rooms are nodes connected
+  by edges (doors) forming
+  a tree hierarchy
+end note
+
+@enduml

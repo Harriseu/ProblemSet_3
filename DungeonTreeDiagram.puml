@@ -1,0 +1,55 @@
+@startuml DungeonTreeDiagram
+
+title Problem Set 3 - Task 2\nDungeon Room Layout (Tree Structure)
+
+' Define tree structure using WBS (Work Breakdown Structure) diagram
+@startwbs
+* Temple Entrance\n(ROOT)
+** Entities:
+*** Stone Tablet <Clue>
+** Action: Examine
+** Main Hall
+*** Entities:
+**** Giant Spider <Monster>
+**** Health Potion <Item>
+*** Actions:
+**** Attack Spider
+**** Collect Potion
+*** Guard Chamber\n(Left Branch)
+**** Entities:
+***** Skeleton Warrior <Monster>
+***** Ancient Shield <Clue>
+**** Actions:
+***** Attack Skeleton
+***** Examine Shield
+*** Treasure Vault\n(Right Branch)
+**** Entities:
+***** Golden Amulet <Item>
+***** Silver Coins <Item>
+**** Actions:
+***** Collect Amulet
+***** Collect Coins
+*** Secret Passage\n(Hidden Branch)
+**** Entities:
+***** Dusty Journal <Clue>
+***** Shadow Beast <Monster>
+**** Actions:
+***** Examine Journal
+***** Attack Beast
+**** Inner Sanctum\n(GOAL)
+***** Entities:
+****** Crystal of Power <Item>
+***** Action:
+****** Collect Crystal
+@endwbs
+
+legend right
+  |= Symbol |= Meaning |
+  | <Monster> | Enemy to fight |
+  | <Item> | Treasure to collect |
+  | <Clue> | Information to examine |
+  | (ROOT) | Starting point of dungeon |
+  | (GOAL) | Final destination |
+end legend
+
+@enduml
